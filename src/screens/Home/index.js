@@ -1,5 +1,5 @@
 import React from 'react';
-import { Button } from 'native-base';
+import { Button, View } from 'react-native';
 
 import { screens } from '../../navigation/constants';
 
