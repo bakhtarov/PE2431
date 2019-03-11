@@ -3,14 +3,7 @@ import { View, Text, Button, CameraRoll } from 'react-native';
 import Video from 'react-native-video';
 import { TouchableHighlight } from 'react-native-gesture-handler';
 
-import { styles } from './styles';
-
-const FilterType = {
-  PROCESS: 'CIPhotoEffectProcess',
-  TONAL: 'CIPhotoEffectTonal',
-  TRANSFER: 'CIPhotoEffectTransfer',
-  SEPIA: 'CISepiaTone',
-};
+import styles from './styles';
 
 class Preview extends Component {
   state = {
@@ -31,23 +24,34 @@ class Preview extends Component {
     };
   };
 
+  FILTERTYPE = [
+    { key: 'process', type: 'CIPhotoEffectProcess' },
+    { key: 'tonal', type: 'CIPhotoEffectTonal' },
+    { key: 'transfer', type: 'CIPhotoEffectTransfer' },
+    { key: 'sepia', type: 'CISepiaTone' },
+  ];
+
   componentDidMount() {
     this.props.navigation.setParams({
       saveVideo: this.saveVideo,
     });
   }
 
-  onChangeFilter = type => {
-    this.setState({ filterType: FilterType[type] });
+  onChangeFilter = filterType => {
+    this.setState({ filterType });
     this.player.seek(0);
   };
 
   saveVideo = () => {
     this.player
       .save()
-      .then(response => CameraRoll.saveToCameraRoll(response.uri, 'video'));
+      .then(video => CameraRoll.saveToCameraRoll(video.uri, 'video'));
 
     this.props.navigation.popToTop();
+  };
+
+  setPlayerRef = ref => {
+    this.player = ref;
   };
 
   render() {
@@ -59,9 +63,7 @@ class Preview extends Component {
         <View style={styles.container}>
           <Video
             source={{ uri }}
-            ref={ref => {
-              this.player = ref;
-            }}
+            ref={this.setPlayerRef}
             filterEnabled
             filter={filterType}
             fullscreen
@@ -71,16 +73,16 @@ class Preview extends Component {
           />
         </View>
         <View style={styles.filtersContainer}>
-          {Object.keys(FilterType).map(key => {
-            const isApplied = FilterType[key] === filterType;
+          {this.FILTERTYPE.map(filter => {
+            const isApplied = filter.type === filterType;
             return (
               <TouchableHighlight
-                key={key}
-                onPress={() => this.onChangeFilter(key)}
+                key={filter.type}
+                onPress={() => this.onChangeFilter(filter.type)}
                 style={styles.filterWrapper}
               >
                 <Text style={{ color: isApplied ? 'red' : 'white' }}>
-                  {key.toLowerCase()}
+                  {filter.key}
                 </Text>
               </TouchableHighlight>
             );

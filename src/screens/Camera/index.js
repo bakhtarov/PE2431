@@ -3,7 +3,7 @@ import { View, Text, TouchableOpacity } from 'react-native';
 import { RNCamera } from 'react-native-camera';
 
 import { screens } from '../../navigation/constants';
-import { styles } from './styles';
+import styles from './styles';
 
 const MAXFILESIZE = 20 * 1024 * 1024 * 1024;
 const MAXDURATION = 10 * 60;
@@ -40,9 +40,7 @@ class Camera extends Component {
     } else {
       this.setState({ isRecording: true }, () => {
         camera.recordAsync(options).then(record => {
-          this.setState({
-            record,
-          });
+          this.setState({ record });
         });
       });
     }
@@ -62,13 +60,13 @@ class Camera extends Component {
           style={styles.preview}
           type={RNCamera.Constants.Type.back}
           flashMode={RNCamera.Constants.FlashMode.on}
-          permissionDialogTitle={'Permission to use camera'}
-          permissionDialogMessage={
-            'We need your permission to use your camera phone'
-          }
+          permissionDialogTitle="Permission to use camera"
+          permissionDialogMessage="We need your permission to use your camera phone"
         >
-          {({ camera, status, recordAudioPermissionStatus }) => {
-            if (status !== 'READY') return null;
+          {({ camera, status }) => {
+            if (status !== 'READY') {
+              return null;
+            }
             return (
               <View style={styles.camera}>
                 <TouchableOpacity
@@ -79,14 +77,14 @@ class Camera extends Component {
                     {isRecording ? 'STOP' : 'START'}
                   </Text>
                 </TouchableOpacity>
-                {record ? (
+                {Boolean(record) && (
                   <TouchableOpacity
                     onPress={this.handlePressPreview}
                     style={styles.capture}
                   >
                     <Text style={styles.font14}>{'PREVIEW'}</Text>
                   </TouchableOpacity>
-                ) : null}
+                )}
               </View>
             );
           }}
