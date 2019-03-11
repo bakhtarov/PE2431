@@ -27,6 +27,11 @@ class Camera extends Component {
     record: null,
   };
 
+  static navigationOptions = {
+    headerTransparent: true,
+    headerStyle: { borderBottomWidth: 0 },
+  };
+
   recordVideo = async camera => {
     if (this.state.isRecording) {
       this.setState({ isRecording: false }, () => {

@@ -2,10 +2,12 @@ import React from 'react';
 import { Button, View } from 'react-native';
 
 import { screens } from '../../navigation/constants';
+import { styles } from './styles';
 
 export default class Home extends React.PureComponent {
   static navigationOptions = {
     headerTitle: 'Home',
+    headerTransparent: true,
   };
 
   handlePressStart = () => {
@@ -14,7 +16,7 @@ export default class Home extends React.PureComponent {
 
   render() {
     return (
-      <View>
+      <View style={styles.container}>
         <Button onPress={this.handlePressStart} title="Start Recording" />
       </View>
     );
