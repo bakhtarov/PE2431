@@ -1,5 +1,5 @@
-import React, { Component } from 'react';
-import { View, Text, Button } from 'react-native';
+import React, { Component, Fragment } from 'react';
+import { View, Text, Button, CameraRoll } from 'react-native';
 import Video from 'react-native-video';
 import { TouchableHighlight } from 'react-native-gesture-handler';
 
@@ -42,21 +42,20 @@ class Preview extends Component {
     this.player.seek(0);
   };
 
-  saveVideo = async () => {
-    const video = await this.player.save();
-    console.log('video::::', video);
+  saveVideo = () => {
+    this.player
+      .save()
+      .then(response => CameraRoll.saveToCameraRoll(response.uri, 'video'));
+
     this.props.navigation.popToTop();
   };
 
   render() {
-    console.log('props:::', this.props);
-    console.log('this.player:::', this.player);
-
     const { uri } = this.props.navigation.state.params.record;
     const { filterType } = this.state;
 
     return (
-      <>
+      <Fragment>
         <View style={styles.container}>
           <Video
             source={{ uri }}
@@ -87,7 +86,7 @@ class Preview extends Component {
             );
           })}
         </View>
-      </>
+      </Fragment>
     );
   }
 }
