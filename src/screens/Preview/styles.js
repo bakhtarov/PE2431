@@ -1,16 +1,11 @@
 import { StyleSheet } from 'react-native';
 
 export const styles = StyleSheet.create({
-  // container: {
-  //   flex: 1,
-  //   flexDirection: 'column',
-  //   backgroundColor: 'black',
-  // },
-  // preview: {
-  //   flex: 1,
-  //   justifyContent: 'flex-end',
-  //   alignItems: 'center',
-  // },
+  container: {
+    flex: 1,
+    // flexDirection: 'column',
+    // backgroundColor: '#000',
+  },
   capture: {
     flex: 0,
     backgroundColor: '#fff',
@@ -45,5 +40,16 @@ export const styles = StyleSheet.create({
     left: 0,
     bottom: 0,
     right: 0,
+  },
+  saveBtnContainer: {
+    flexDirection: 'row',
+    width: '100%',
+    justifyContent: 'center',
+    zIndex: 3,
+    backgroundColor: 'transparent',
+    position: 'absolute',
+    left: 0,
+    right: 0,
+    bottom: 30,
   },
 });
