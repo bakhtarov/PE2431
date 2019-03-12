@@ -55,7 +55,7 @@ class Preview extends Component {
   };
 
   render() {
-    const { uri } = this.props.navigation.state.params.record;
+    const { uri } = this.props.navigation.state.params;
     const { filterType } = this.state;
 
     return (

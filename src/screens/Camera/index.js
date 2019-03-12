@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { View, Text, TouchableOpacity } from 'react-native';
 import { RNCamera } from 'react-native-camera';
+import RNVideoEditor from 'react-native-video-editor';
 
 import { screens } from '../../navigation/constants';
 import styles from './styles';
@@ -24,7 +25,7 @@ const CAMERA_CONFIG = {
 class Camera extends Component {
   state = {
     isRecording: false,
-    record: null,
+    uri: null,
   };
 
   static navigationOptions = {
@@ -39,20 +40,35 @@ class Camera extends Component {
       });
     } else {
       this.setState({ isRecording: true }, () => {
-        camera.recordAsync(options).then(record => {
-          this.setState({ record });
+        camera.recordAsync(options).then(({ uri }) => {
+          if (!this.state.uri) {
+            this.setState({ uri });
+          } else {
+            RNVideoEditor.merge(
+              [this.state.uri, uri],
+              results => {
+                console.log('Error::: ' + results);
+              },
+              (results, uri) => {
+                console.log(
+                  'Success::: ' + results + '\n' + 'record::: ' + uri
+                );
+                this.setState({ uri });
+              }
+            );
+          }
         });
       });
     }
   };
 
   handlePressPreview = () => {
-    const { record } = this.state;
-    this.props.navigation.navigate(screens.Preview, { record });
+    const { uri } = this.state;
+    this.props.navigation.navigate(screens.Preview, { uri });
   };
 
   render() {
-    const { isRecording, record } = this.state;
+    const { isRecording, uri } = this.state;
 
     return (
       <View style={styles.container}>
@@ -77,7 +93,7 @@ class Camera extends Component {
                     {isRecording ? 'STOP' : 'START'}
                   </Text>
                 </TouchableOpacity>
-                {Boolean(record) && (
+                {Boolean(uri) && (
                   <TouchableOpacity
                     onPress={this.handlePressPreview}
                     style={styles.capture}
