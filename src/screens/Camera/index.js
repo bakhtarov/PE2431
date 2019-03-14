@@ -1,9 +1,10 @@
 import React, { Component } from 'react';
 import { View, Text, TouchableOpacity } from 'react-native';
 import { RNCamera } from 'react-native-camera';
+import RNVideoEditor from 'react-native-video-editor';
 
 import { screens } from '../../navigation/constants';
-import { styles } from './styles';
+import styles from './styles';
 
 const MAXFILESIZE = 20 * 1024 * 1024 * 1024;
 const MAXDURATION = 10 * 60;
@@ -24,7 +25,7 @@ const CAMERA_CONFIG = {
 class Camera extends Component {
   state = {
     isRecording: false,
-    record: null,
+    uri: null,
   };
 
   static navigationOptions = {
@@ -39,22 +40,35 @@ class Camera extends Component {
       });
     } else {
       this.setState({ isRecording: true }, () => {
-        camera.recordAsync(options).then(record => {
-          this.setState({
-            record,
-          });
+        camera.recordAsync(options).then(({ uri }) => {
+          if (!this.state.uri) {
+            this.setState({ uri });
+          } else {
+            RNVideoEditor.merge(
+              [this.state.uri, uri],
+              results => {
+                console.log('Error::: ' + results);
+              },
+              (results, uri) => {
+                console.log(
+                  'Success::: ' + results + '\n' + 'record::: ' + uri
+                );
+                this.setState({ uri });
+              }
+            );
+          }
         });
       });
     }
   };
 
   handlePressPreview = () => {
-    const { record } = this.state;
-    this.props.navigation.navigate(screens.Preview, { record });
+    const { uri } = this.state;
+    this.props.navigation.navigate(screens.Preview, { uri });
   };
 
   render() {
-    const { isRecording, record } = this.state;
+    const { isRecording, uri } = this.state;
 
     return (
       <View style={styles.container}>
@@ -62,13 +76,13 @@ class Camera extends Component {
           style={styles.preview}
           type={RNCamera.Constants.Type.back}
           flashMode={RNCamera.Constants.FlashMode.on}
-          permissionDialogTitle={'Permission to use camera'}
-          permissionDialogMessage={
-            'We need your permission to use your camera phone'
-          }
+          permissionDialogTitle="Permission to use camera"
+          permissionDialogMessage="We need your permission to use your camera phone"
         >
-          {({ camera, status, recordAudioPermissionStatus }) => {
-            if (status !== 'READY') return null;
+          {({ camera, status }) => {
+            if (status !== 'READY') {
+              return null;
+            }
             return (
               <View style={styles.camera}>
                 <TouchableOpacity
@@ -79,14 +93,14 @@ class Camera extends Component {
                     {isRecording ? 'STOP' : 'START'}
                   </Text>
                 </TouchableOpacity>
-                {record ? (
+                {Boolean(uri) && (
                   <TouchableOpacity
                     onPress={this.handlePressPreview}
                     style={styles.capture}
                   >
                     <Text style={styles.font14}>{'PREVIEW'}</Text>
                   </TouchableOpacity>
-                ) : null}
+                )}
               </View>
             );
           }}

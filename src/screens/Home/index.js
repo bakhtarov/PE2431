@@ -2,7 +2,7 @@ import React from 'react';
 import { Button, View } from 'react-native';
 
 import { screens } from '../../navigation/constants';
-import { styles } from './styles';
+import styles from './styles';
 
 export default class Home extends React.PureComponent {
   static navigationOptions = {
